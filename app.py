@@ -4,7 +4,11 @@ import fitz  # PyMuPDF
 import tempfile
 import os
 
-API_KEY = os.environ.get("API_KEY")  # You’ll set this on Render
+# ✅ Create the Flask app
+app = Flask(__name__)
+
+# ✅ Load the API key from environment variables
+API_KEY = os.environ.get("API_KEY")
 
 @app.route('/extract-text', methods=['POST'])
 def extract_text():
@@ -34,3 +38,8 @@ def extract_text():
         return jsonify({"text": full_text.strip()})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# ✅ Entry point for Render to run your app
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
+
