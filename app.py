@@ -2,11 +2,17 @@ from flask import Flask, request, jsonify
 import requests
 import fitz  # PyMuPDF
 import tempfile
+import os
 
-app = Flask(__name__)
+API_KEY = os.environ.get("API_KEY")  # You’ll set this on Render
 
 @app.route('/extract-text', methods=['POST'])
 def extract_text():
+    # 🔐 Check API key from headers
+    provided_key = request.headers.get("X-API-Key")
+    if provided_key != API_KEY:
+        return jsonify({"error": "Unauthorized"}), 401
+
     data = request.get_json()
     file_url = data.get("file_url")
 
@@ -28,6 +34,3 @@ def extract_text():
         return jsonify({"text": full_text.strip()})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
